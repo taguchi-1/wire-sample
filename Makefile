@@ -24,6 +24,12 @@ endif
 ifeq ($(shell command -v goimports 2> /dev/null),)
 	go get -u golang.org/x/tools/cmd/goimports
 endif
+ifeq ($(shell command -v wire 2> /dev/null),)
+	go get github.com/google/wire/cmd/wire
+endif
+
+wire:
+	wire cmd/$(name)/wire.go
 
 fmt:
 	goimports -w cmd/$(name)/main.go
@@ -42,9 +48,9 @@ test:
 build:
 	$(eval revision := $(shell if [[ $$REV = "" ]]; then git rev-parse --short HEAD; else echo $$REV;fi;))
 	$(eval ldflags  := -X 'main.revision=$(revision)' -extldflags '-static')
-	GOOS=$(OS) GOARCH=amd64 CGO_ENABLED=0 go build -ldflags "$(ldflags)" -o $(bin_dir)/$(name)_$(OS)_amd64 $(BUILD_OPTIONS) cmd/$(name)/main.go
+	GOOS=$(OS) GOARCH=amd64 CGO_ENABLED=0 go build -ldflags "$(ldflags)" -o $(bin_dir)/$(name)_$(OS)_amd64 $(BUILD_OPTIONS) cmd/$(name)/main.go cmd/$(name)/wire_gen.go
 
-release: fmt lint test build
+release: wire fmt lint test build
 
 install:
 ifeq ($(INSTALL_BIN),)
