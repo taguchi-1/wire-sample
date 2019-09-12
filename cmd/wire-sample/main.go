@@ -9,10 +9,7 @@ import (
 	"syscall"
 
 	"github.com/labstack/echo"
-	"github.com/taguchi-1/wire-sample/application"
-	"github.com/taguchi-1/wire-sample/domain/service"
-	"github.com/taguchi-1/wire-sample/infra/persistence"
-	"github.com/taguchi-1/wire-sample/interface/handler"
+	"github.com/taguchi-1/wire-sample/infra/container"
 )
 
 const (
@@ -38,12 +35,12 @@ func main() {
 func newServer(ctx context.Context) *http.Server {
 
 	// Changed to wire generate code -
-	todoRepo := persistence.NewTodo()
-	todoService := service.NewTodo(todoRepo)
-	todoApp := application.NewTodo(todoService)
-	todoHandler := handler.NewTodo(todoApp)
+	// todoRepo := persistence.NewTodo()
+	// todoService := service.NewTodo(todoRepo)
+	// todoApp := application.NewTodo(todoService)
+	// todoHandler := handler.NewTodo(todoApp)
 
-	// todoHandler := InitializeTodoHandler()
+	todoHandler := container.InitializeTodoHandler()
 
 	e := echo.New()
 	e.GET("/todos/:todoID", todoHandler.Get)
