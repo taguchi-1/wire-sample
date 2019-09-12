@@ -6,10 +6,12 @@
 package container
 
 import (
+	"github.com/labstack/echo"
 	"github.com/taguchi-1/wire-sample/application"
 	"github.com/taguchi-1/wire-sample/domain/service"
 	"github.com/taguchi-1/wire-sample/infra/persistence"
 	"github.com/taguchi-1/wire-sample/interface/handler"
+	"github.com/taguchi-1/wire-sample/interface/router"
 )
 
 // Injectors from wire.go:
@@ -26,4 +28,29 @@ func InitializeTodoHandler() (handler.Todo, error) {
 		return nil, err
 	}
 	return handlerTodo, nil
+}
+
+func InitializeFrontRouter() (*echo.Echo, error) {
+	todo := persistence.NewTodo()
+	serviceTodo := service.NewTodo(todo)
+	applicationTodo, err := application.NewTodo(serviceTodo)
+	if err != nil {
+		return nil, err
+	}
+	handlerTodo, err := handler.NewTodo(applicationTodo)
+	if err != nil {
+		return nil, err
+	}
+	user := persistence.NewUser()
+	serviceUser := service.NewUser(user)
+	applicationUser, err := application.NewUser(serviceUser)
+	if err != nil {
+		return nil, err
+	}
+	handlerUser, err := handler.NewUser(applicationUser)
+	if err != nil {
+		return nil, err
+	}
+	echoEcho := router.NewFront(handlerTodo, handlerUser)
+	return echoEcho, nil
 }

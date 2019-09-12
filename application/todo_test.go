@@ -10,7 +10,7 @@ import (
 	"github.com/taguchi-1/wire-sample/infra/persistence"
 )
 
-func TestGet(t *testing.T) {
+func TestTodoGet(t *testing.T) {
 	type input struct {
 		req *entity.TodoGetRequest
 	}

@@ -8,7 +8,6 @@ import (
 	"sync"
 	"syscall"
 
-	"github.com/labstack/echo"
 	"github.com/taguchi-1/wire-sample/infra/container"
 )
 
@@ -44,14 +43,13 @@ func newServer(ctx context.Context) (*http.Server, error) {
 	// todoApp := application.NewTodo(todoService)
 	// todoHandler := handler.NewTodo(todoApp)
 
-	todoHandler, err := container.InitializeTodoHandler()
-	if err != nil {
-		return nil, err
-	}
+	// todoHandler, err := container.InitializeTodoHandler()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
-	e := echo.New()
-	e.GET("/todos/:todoID", todoHandler.Get)
-	return e.Server, nil
+	frontRouter, err := container.InitializeFrontRouter()
+	return frontRouter.Server, err
 }
 
 func startServer(ctx context.Context, httpServer *http.Server) {

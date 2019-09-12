@@ -8,6 +8,7 @@ import (
 	"github.com/taguchi-1/wire-sample/domain/service"
 	"github.com/taguchi-1/wire-sample/infra/persistence"
 	"github.com/taguchi-1/wire-sample/interface/handler"
+	"github.com/taguchi-1/wire-sample/interface/router"
 )
 
 // ProviderSet container provider
@@ -16,4 +17,5 @@ var ProviderSet = wire.NewSet(
 	service.ProviderSet,
 	application.ProviderSet,
 	handler.ProviderSet,
+	router.ProviderSet,
 )

@@ -9,12 +9,12 @@ import (
 	"github.com/taguchi-1/wire-sample/infra/persistence"
 )
 
-func TestTodoGet(t *testing.T) {
+func TestUserGet(t *testing.T) {
 	type input struct {
 		id string
 	}
 	type expect struct {
-		todo *entity.Todo
+		todo *entity.User
 	}
 	cases := []struct {
 		name   string
@@ -27,9 +27,9 @@ func TestTodoGet(t *testing.T) {
 				id: "1",
 			},
 			expect: expect{
-				todo: &entity.Todo{
-					ID:    "1",
-					Title: "タイトル",
+				todo: &entity.User{
+					ID:   "1",
+					Name: "名前",
 				},
 			},
 		},
@@ -37,7 +37,7 @@ func TestTodoGet(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			ctx := context.Background()
-			todoService := NewTodo(persistence.NewTodo())
+			todoService := NewUser(persistence.NewUser())
 			actual, err := todoService.Get(ctx, c.input.id)
 			assert.Nil(t, err)
 			assert.Equal(t, c.expect.todo, actual)
