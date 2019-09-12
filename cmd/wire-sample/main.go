@@ -19,10 +19,14 @@ const (
 
 func main() {
 	ctx := context.Background()
-	httpServer := newServer(ctx)
 
 	print(ctx, "start http server\n")
-	startServer(ctx, newServer(ctx))
+	httpServer, err := newServer(ctx)
+	if err != nil {
+		print("failed to init server\n")
+		os.Exit(1)
+	}
+	startServer(ctx, httpServer)
 
 	quitCh := make(chan os.Signal)
 	signal.Notify(quitCh, syscall.SIGINT, syscall.SIGTERM)
@@ -32,7 +36,7 @@ func main() {
 	shutdownServer(ctx, httpServer)
 }
 
-func newServer(ctx context.Context) *http.Server {
+func newServer(ctx context.Context) (*http.Server, error) {
 
 	// Changed to wire generate code -
 	// todoRepo := persistence.NewTodo()
@@ -40,11 +44,14 @@ func newServer(ctx context.Context) *http.Server {
 	// todoApp := application.NewTodo(todoService)
 	// todoHandler := handler.NewTodo(todoApp)
 
-	todoHandler := container.InitializeTodoHandler()
+	todoHandler, err := container.InitializeTodoHandler()
+	if err != nil {
+		return nil, err
+	}
 
 	e := echo.New()
 	e.GET("/todos/:todoID", todoHandler.Get)
-	return e.Server
+	return e.Server, nil
 }
 
 func startServer(ctx context.Context, httpServer *http.Server) {

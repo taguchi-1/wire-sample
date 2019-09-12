@@ -14,16 +14,16 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeTodoHandler() handler.Todo {
+func InitializeTodoHandler() (handler.Todo, error) {
 	todo := persistence.NewTodo()
 	serviceTodo := service.NewTodo(todo)
-	applicationTodo := application.NewTodo(serviceTodo)
-	handlerTodo := handler.NewTodo(applicationTodo)
-	return handlerTodo
-}
-
-func InitializeTodoService() service.Todo {
-	todo := persistence.NewTodo()
-	serviceTodo := service.NewTodo(todo)
-	return serviceTodo
+	applicationTodo, err := application.NewTodo(serviceTodo)
+	if err != nil {
+		return nil, err
+	}
+	handlerTodo, err := handler.NewTodo(applicationTodo)
+	if err != nil {
+		return nil, err
+	}
+	return handlerTodo, nil
 }

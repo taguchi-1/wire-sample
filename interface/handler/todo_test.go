@@ -32,7 +32,8 @@ func TestGet(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			todoHandler := NewTodo(application.NewTodo(service.NewTodo(persistence.NewTodo())))
+			todoApp, _ := application.NewTodo(service.NewTodo(persistence.NewTodo()))
+			todoHandler, _ := NewTodo(todoApp)
 			ec := echo.New().NewContext(httptest.NewRequest("GET", "/", nil), httptest.NewRecorder())
 			ec.SetParamNames(todoIDParam)
 			ec.SetParamValues(c.input.id)
