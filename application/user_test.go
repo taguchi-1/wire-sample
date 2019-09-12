@@ -1,4 +1,4 @@
-package service
+package application
 
 import (
 	"context"
@@ -6,15 +6,16 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/taguchi-1/wire-sample/domain/entity"
+	"github.com/taguchi-1/wire-sample/domain/service"
 	"github.com/taguchi-1/wire-sample/infra/persistence"
 )
 
-func TestTodoGet(t *testing.T) {
+func TestUserGet(t *testing.T) {
 	type input struct {
-		id string
+		req *entity.UserGetRequest
 	}
 	type expect struct {
-		todo *entity.Todo
+		res *entity.UserResponse
 	}
 	cases := []struct {
 		name   string
@@ -24,12 +25,11 @@ func TestTodoGet(t *testing.T) {
 		{
 			name: "Test Case A.",
 			input: input{
-				id: "1",
+				req: &entity.UserGetRequest{ID: "1"},
 			},
 			expect: expect{
-				todo: &entity.Todo{
-					ID:    "1",
-					Title: "タイトル",
+				res: &entity.UserResponse{
+					User: entity.User{ID: "1", Name: "名前"},
 				},
 			},
 		},
@@ -37,10 +37,13 @@ func TestTodoGet(t *testing.T) {
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			ctx := context.Background()
-			todoService := NewTodo(persistence.NewTodo())
-			actual, err := todoService.Get(ctx, c.input.id)
+			userRepo := persistence.NewUser()
+			userService := service.NewUser(userRepo)
+			userApp, _ := NewUser(userService)
+
+			actual, err := userApp.Get(ctx, c.input.req)
 			assert.Nil(t, err)
-			assert.Equal(t, c.expect.todo, actual)
+			assert.Equal(t, c.expect.res, actual)
 		})
 	}
 }
