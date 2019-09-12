@@ -8,6 +8,7 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/labstack/echo"
 	"github.com/taguchi-1/wire-sample/infra/container"
 )
 
@@ -37,26 +38,25 @@ func main() {
 
 func newServer(ctx context.Context) (*http.Server, error) {
 
-	// Changed to wire generate code -
-	// todoRepo := persistence.NewTodo()
-	// todoService := service.NewTodo(todoRepo)
-	// todoApp := application.NewTodo(todoService)
-	// todoHandler := handler.NewTodo(todoApp)
+	e := echo.New()
+	_, err := container.InitializeFrontRouter(e)
+	if err != nil {
+		return nil, err
+	}
 
-	// todoHandler, err := container.InitializeTodoHandler()
-	// if err != nil {
-	// 	return nil, err
-	// }
+	_, err = container.InitializeBackgroundRouter(e)
+	if err != nil {
+		return nil, err
+	}
 
-	frontRouter, err := container.InitializeFrontRouter()
-	return frontRouter.Server, err
+	return e.Server, err
 }
 
 func startServer(ctx context.Context, httpServer *http.Server) {
 	go func() {
 		httpServer.Addr = httpAddress
 		if err := httpServer.ListenAndServe(); err != nil {
-			print("failed to start the http server\n")
+			// print("failed to start the http server\n")
 		}
 	}()
 }

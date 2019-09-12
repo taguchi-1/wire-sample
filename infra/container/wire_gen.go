@@ -30,7 +30,7 @@ func InitializeTodoHandler() (handler.Todo, error) {
 	return handlerTodo, nil
 }
 
-func InitializeFrontRouter() (*echo.Echo, error) {
+func InitializeFrontRouter(e *echo.Echo) (router.Front, error) {
 	todo := persistence.NewTodo()
 	serviceTodo := service.NewTodo(todo)
 	applicationTodo, err := application.NewTodo(serviceTodo)
@@ -51,6 +51,11 @@ func InitializeFrontRouter() (*echo.Echo, error) {
 	if err != nil {
 		return nil, err
 	}
-	echoEcho := router.NewFront(handlerTodo, handlerUser)
-	return echoEcho, nil
+	front := router.NewFront(e, handlerTodo, handlerUser)
+	return front, nil
+}
+
+func InitializeBackgroundRouter(e *echo.Echo) (router.Background, error) {
+	background := router.NewBackground(e)
+	return background, nil
 }
