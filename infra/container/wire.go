@@ -4,18 +4,11 @@ package container
 
 import (
 	"github.com/google/wire"
-	"github.com/taguchi-1/wire-sample/domain/service"
 	"github.com/taguchi-1/wire-sample/interface/handler"
 )
 
 // InitializeTodoHandler InitializeTodoHandler
-func InitializeTodoHandler() (todoHandler handler.Todo) {
-	wire.Build(ProviderSet)
-	return
-}
-
-// InitializeTodoService InitializeTodoService
-func InitializeTodoService() (todoService service.Todo) {
+func InitializeTodoHandler() (todoHandler handler.Todo, err error) {
 	wire.Build(ProviderSet)
 	return
 }

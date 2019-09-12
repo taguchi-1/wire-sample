@@ -39,7 +39,7 @@ func TestGet(t *testing.T) {
 			ctx := context.Background()
 			todoRepo := persistence.NewTodo()
 			todoService := service.NewTodo(todoRepo)
-			todoApp := NewTodo(todoService)
+			todoApp, _ := NewTodo(todoService)
 
 			actual, err := todoApp.Get(ctx, c.input.req)
 			assert.Nil(t, err)

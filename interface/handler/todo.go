@@ -22,8 +22,8 @@ const (
 )
 
 //NewTodo  handler constructor
-func NewTodo(todoApp application.Todo) Todo {
-	return &todoImpl{todoApp}
+func NewTodo(todoApp application.Todo) (Todo, error) {
+	return &todoImpl{todoApp}, nil
 }
 
 // Get get handler
