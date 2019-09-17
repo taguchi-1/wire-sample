@@ -13,7 +13,7 @@ type UserGetRequest struct {
 
 // UserResponse reponse
 type UserResponse struct {
-	User User `json:"User"`
+	User *User `json:"User"`
 }
 
 // NewUserRequest new request
@@ -23,5 +23,5 @@ func NewUserRequest(id string) *UserGetRequest {
 
 // NewUserResponse new response
 func NewUserResponse(User *User) *UserResponse {
-	return &UserResponse{User: *User}
+	return &UserResponse{User: User}
 }

@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
+	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/taguchi-1/wire-sample/domain/entity"
-	"github.com/taguchi-1/wire-sample/infra/persistence"
+	"github.com/taguchi-1/wire-sample/domain/repository"
 )
 
 func TestUserGet(t *testing.T) {
@@ -14,7 +15,7 @@ func TestUserGet(t *testing.T) {
 		id string
 	}
 	type expect struct {
-		todo *entity.User
+		user *entity.User
 	}
 	cases := []struct {
 		name   string
@@ -27,7 +28,7 @@ func TestUserGet(t *testing.T) {
 				id: "1",
 			},
 			expect: expect{
-				todo: &entity.User{
+				user: &entity.User{
 					ID:   "1",
 					Name: "名前",
 				},
@@ -36,11 +37,18 @@ func TestUserGet(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
 			ctx := context.Background()
-			todoService := NewUser(persistence.NewUser())
-			actual, err := todoService.Get(ctx, c.input.id)
+			userRepo := repository.NewMockUser(ctrl)
+			userRepo.EXPECT().Get(ctx, c.input.id).MinTimes(1).Return(
+				c.expect.user, nil,
+			)
+			userService := NewUser(userRepo)
+			actual, err := userService.Get(ctx, c.input.id)
 			assert.Nil(t, err)
-			assert.Equal(t, c.expect.todo, actual)
+			assert.Equal(t, c.expect.user, actual)
 		})
 	}
 }
