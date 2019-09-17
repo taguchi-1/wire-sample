@@ -28,8 +28,22 @@ ifeq ($(shell command -v wire 2> /dev/null),)
 	go get github.com/google/wire/cmd/wire
 endif
 
+ifeq ($(shell command -v mockgen 2> /dev/null),)
+	go get github.com/golang/mock/mockgen
+endif
+
 wire:
 	wire infra/container/wire.go infra/container/providers.go
+
+mock:
+	for path in $$(go list -f {{.Dir}} ./... | grep -v "$(name)$$"); do \
+		package=$$(basename $$path);\
+	  for gofile in $$(ls $$path | grep -v '_test.go$$'| grep -v '_mock.go$$' | cut -d'.' -f1); do \
+			if grep -q 'type.*interface' "$$path/$$gofile".go; then \
+				mockgen -source "$$path/$$gofile".go -destination "$$path/$$gofile"_mock.go -package "$$package"; \
+			fi \
+		done \
+	done
 
 fmt:
 	goimports -w cmd/$(name)/main.go
