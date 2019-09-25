@@ -13,14 +13,14 @@ import (
 	"github.com/taguchi-1/wire-sample/domain/entity"
 )
 
-func TestGet(t *testing.T) {
+func TestUserGet(t *testing.T) {
 	type input struct {
 		id string
 	}
 	type expect struct {
 		code      int
 		headerMap http.Header
-		res       *entity.TodoResponse
+		res       *entity.UserResponse
 	}
 	cases := []struct {
 		name   string
@@ -37,13 +37,12 @@ func TestGet(t *testing.T) {
 				headerMap: http.Header{
 					"Content-Type": {"application/json; charset=UTF-8"},
 				},
-				res: &entity.TodoResponse{
-					Todo: &entity.Todo{ID: "1", Title: "タイトル"},
+				res: &entity.UserResponse{
+					User: &entity.User{ID: "1", Name: "名前"},
 				},
 			},
 		},
 	}
-
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
@@ -52,21 +51,21 @@ func TestGet(t *testing.T) {
 			// create resquest context
 			res := httptest.NewRecorder()
 			ec := echo.New().NewContext(httptest.NewRequest("GET", "/", nil), res)
-			ec.SetParamNames(todoIDParam)
+			ec.SetParamNames(userIDParam)
 			ec.SetParamValues(c.input.id)
 
 			// create mock
-			todoApp := application.NewMockTodo(ctrl)
-			todoApp.EXPECT().Get(ec.Request().Context(), &entity.TodoGetRequest{
+			userApp := application.NewMockUser(ctrl)
+			userApp.EXPECT().Get(ec.Request().Context(), &entity.UserGetRequest{
 				ID: c.input.id,
 			}).MinTimes(1).Return(
 				c.expect.res, nil,
 			)
-			todoHandler, _ := NewTodo(todoApp)
-			actual := &entity.TodoResponse{}
+			userHandler, _ := NewUser(userApp)
+			actual := &entity.UserResponse{}
 
 			// execute handler
-			err := todoHandler.Get(ec)
+			err := userHandler.Get(ec)
 
 			// check response code & header & body
 			assert.Nil(t, err)

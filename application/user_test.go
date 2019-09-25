@@ -1,4 +1,4 @@
-package service
+package application
 
 import (
 	"context"
@@ -7,15 +7,15 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"github.com/taguchi-1/wire-sample/domain/entity"
-	"github.com/taguchi-1/wire-sample/domain/repository"
+	"github.com/taguchi-1/wire-sample/domain/service"
 )
 
-func TestTodoGet(t *testing.T) {
+func TestUserGet(t *testing.T) {
 	type input struct {
-		id string
+		req *entity.UserGetRequest
 	}
 	type expect struct {
-		todo *entity.Todo
+		res *entity.UserResponse
 	}
 	cases := []struct {
 		name   string
@@ -25,12 +25,11 @@ func TestTodoGet(t *testing.T) {
 		{
 			name: "Test Case A.",
 			input: input{
-				id: "1",
+				req: &entity.UserGetRequest{ID: "1"},
 			},
 			expect: expect{
-				todo: &entity.Todo{
-					ID:    "1",
-					Title: "タイトル",
+				res: &entity.UserResponse{
+					User: &entity.User{ID: "1", Name: "名前"},
 				},
 			},
 		},
@@ -41,14 +40,15 @@ func TestTodoGet(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			todoRepo := repository.NewMockTodo(ctrl)
-			todoRepo.EXPECT().Get(ctx, c.input.id).MinTimes(1).Return(
-				c.expect.todo, nil,
+			userService := service.NewMockUser(ctrl)
+			userService.EXPECT().Get(ctx, c.input.req.ID).MinTimes(1).Return(
+				c.expect.res.User, nil,
 			)
-			todoService := NewTodo(todoRepo)
-			actual, err := todoService.Get(ctx, c.input.id)
+
+			userApp, _ := NewUser(userService)
+			actual, err := userApp.Get(ctx, c.input.req)
 			assert.Nil(t, err)
-			assert.Equal(t, c.expect.todo, actual)
+			assert.Equal(t, c.expect.res, actual)
 		})
 	}
 }

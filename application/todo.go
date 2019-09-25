@@ -17,8 +17,8 @@ type todoImpl struct {
 }
 
 // NewTodo Constructor
-func NewTodo(todoService service.Todo) Todo {
-	return &todoImpl{todoService}
+func NewTodo(todoService service.Todo) (Todo, error) {
+	return &todoImpl{todoService}, nil
 }
 
 func (app *todoImpl) Get(ctx context.Context, req *entity.TodoGetRequest) (*entity.TodoResponse, error) {

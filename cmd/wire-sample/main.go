@@ -9,10 +9,7 @@ import (
 	"syscall"
 
 	"github.com/labstack/echo"
-	"github.com/taguchi-1/wire-sample/application"
-	"github.com/taguchi-1/wire-sample/domain/service"
-	"github.com/taguchi-1/wire-sample/infra/persistence"
-	"github.com/taguchi-1/wire-sample/interface/handler"
+	"github.com/taguchi-1/wire-sample/infra/container"
 )
 
 const (
@@ -22,10 +19,14 @@ const (
 
 func main() {
 	ctx := context.Background()
-	httpServer := newServer(ctx)
 
 	print(ctx, "start http server\n")
-	startServer(ctx, newServer(ctx))
+	httpServer, err := newServer(ctx)
+	if err != nil {
+		print("failed to init server\n")
+		os.Exit(1)
+	}
+	startServer(ctx, httpServer)
 
 	quitCh := make(chan os.Signal)
 	signal.Notify(quitCh, syscall.SIGINT, syscall.SIGTERM)
@@ -35,26 +36,27 @@ func main() {
 	shutdownServer(ctx, httpServer)
 }
 
-func newServer(ctx context.Context) *http.Server {
-
-	// Changed to wire generate code -
-	todoRepo := persistence.NewTodo()
-	todoService := service.NewTodo(todoRepo)
-	todoApp := application.NewTodo(todoService)
-	todoHandler := handler.NewTodo(todoApp)
-
-	// todoHandler := InitializeTodoHandler()
+func newServer(ctx context.Context) (*http.Server, error) {
 
 	e := echo.New()
-	e.GET("/todos/:todoID", todoHandler.Get)
-	return e.Server
+	_, err := container.InitializeFrontRouter(e)
+	if err != nil {
+		return nil, err
+	}
+
+	_, err = container.InitializeBackgroundRouter(e)
+	if err != nil {
+		return nil, err
+	}
+
+	return e.Server, err
 }
 
 func startServer(ctx context.Context, httpServer *http.Server) {
 	go func() {
 		httpServer.Addr = httpAddress
 		if err := httpServer.ListenAndServe(); err != nil {
-			print("failed to start the http server\n")
+			// print("failed to start the http server\n")
 		}
 	}()
 }

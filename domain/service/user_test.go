@@ -10,12 +10,12 @@ import (
 	"github.com/taguchi-1/wire-sample/domain/repository"
 )
 
-func TestTodoGet(t *testing.T) {
+func TestUserGet(t *testing.T) {
 	type input struct {
 		id string
 	}
 	type expect struct {
-		todo *entity.Todo
+		user *entity.User
 	}
 	cases := []struct {
 		name   string
@@ -28,9 +28,9 @@ func TestTodoGet(t *testing.T) {
 				id: "1",
 			},
 			expect: expect{
-				todo: &entity.Todo{
-					ID:    "1",
-					Title: "タイトル",
+				user: &entity.User{
+					ID:   "1",
+					Name: "名前",
 				},
 			},
 		},
@@ -41,14 +41,14 @@ func TestTodoGet(t *testing.T) {
 			defer ctrl.Finish()
 
 			ctx := context.Background()
-			todoRepo := repository.NewMockTodo(ctrl)
-			todoRepo.EXPECT().Get(ctx, c.input.id).MinTimes(1).Return(
-				c.expect.todo, nil,
+			userRepo := repository.NewMockUser(ctrl)
+			userRepo.EXPECT().Get(ctx, c.input.id).MinTimes(1).Return(
+				c.expect.user, nil,
 			)
-			todoService := NewTodo(todoRepo)
-			actual, err := todoService.Get(ctx, c.input.id)
+			userService := NewUser(userRepo)
+			actual, err := userService.Get(ctx, c.input.id)
 			assert.Nil(t, err)
-			assert.Equal(t, c.expect.todo, actual)
+			assert.Equal(t, c.expect.user, actual)
 		})
 	}
 }

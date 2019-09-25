@@ -13,7 +13,7 @@ type TodoGetRequest struct {
 
 // TodoResponse reponse
 type TodoResponse struct {
-	Todo Todo `json:"todo"`
+	Todo *Todo `json:"todo"`
 }
 
 // NewTodoRequest new request
@@ -23,5 +23,5 @@ func NewTodoRequest(id string) *TodoGetRequest {
 
 // NewTodoResponse new response
 func NewTodoResponse(todo *Todo) *TodoResponse {
-	return &TodoResponse{Todo: *todo}
+	return &TodoResponse{Todo: todo}
 }
