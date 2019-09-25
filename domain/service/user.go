@@ -7,20 +7,20 @@ import (
 	"github.com/taguchi-1/wire-sample/domain/repository"
 )
 
-// Todo service interface
-type Todo interface {
-	Get(ctx context.Context, id string) (*entity.Todo, error)
+// User service interface
+type User interface {
+	Get(ctx context.Context, id string) (*entity.User, error)
 }
 
-type todoImpl struct {
-	todoRepo repository.Todo
+type userImpl struct {
+	userRepo repository.User
 }
 
-// NewTodo todo service constructor
-func NewTodo(todoRepo repository.Todo) Todo {
-	return &todoImpl{todoRepo}
+// NewUser user service constructor
+func NewUser(userRepo repository.User) User {
+	return &userImpl{userRepo}
 }
 
-func (s *todoImpl) Get(ctx context.Context, id string) (*entity.Todo, error) {
-	return s.todoRepo.Get(ctx, id)
+func (s *userImpl) Get(ctx context.Context, id string) (*entity.User, error) {
+	return s.userRepo.Get(ctx, id)
 }
