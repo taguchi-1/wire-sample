@@ -9,6 +9,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/taguchi-1/wire-sample/application"
 	"github.com/taguchi-1/wire-sample/domain/service"
+	"github.com/taguchi-1/wire-sample/infra/hogedb"
 	"github.com/taguchi-1/wire-sample/infra/persistence"
 	"github.com/taguchi-1/wire-sample/interface/handler"
 	"github.com/taguchi-1/wire-sample/interface/router"
@@ -16,8 +17,14 @@ import (
 
 // Injectors from wire.go:
 
-func InitializeTodoHandler() (handler.Todo, error) {
-	todo := persistence.NewTodo()
+func InitializeTodoHandler(e *echo.Echo, env hogedb.Env) (handler.Todo, error) {
+	aConfig := hogedb.NewConfigA(env)
+	bConfig := hogedb.NewConfigB(env)
+	hogeDB := &hogedb.HogeDB{
+		AConfig: aConfig,
+		BConfig: bConfig,
+	}
+	todo := persistence.NewTodo(hogeDB)
 	serviceTodo := service.NewTodo(todo)
 	applicationTodo, err := application.NewTodo(serviceTodo)
 	if err != nil {
@@ -30,8 +37,14 @@ func InitializeTodoHandler() (handler.Todo, error) {
 	return handlerTodo, nil
 }
 
-func InitializeFrontRouter(e *echo.Echo) (router.Front, error) {
-	todo := persistence.NewTodo()
+func InitializeFrontRouter(e *echo.Echo, env hogedb.Env) (router.Front, error) {
+	aConfig := hogedb.NewConfigA(env)
+	bConfig := hogedb.NewConfigB(env)
+	hogeDB := &hogedb.HogeDB{
+		AConfig: aConfig,
+		BConfig: bConfig,
+	}
+	todo := persistence.NewTodo(hogeDB)
 	serviceTodo := service.NewTodo(todo)
 	applicationTodo, err := application.NewTodo(serviceTodo)
 	if err != nil {
@@ -41,7 +54,7 @@ func InitializeFrontRouter(e *echo.Echo) (router.Front, error) {
 	if err != nil {
 		return nil, err
 	}
-	user := persistence.NewUser()
+	user := persistence.NewUser(hogeDB)
 	serviceUser := service.NewUser(user)
 	applicationUser, err := application.NewUser(serviceUser)
 	if err != nil {

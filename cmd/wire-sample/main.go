@@ -39,7 +39,7 @@ func main() {
 func newServer(ctx context.Context) (*http.Server, error) {
 
 	e := echo.New()
-	_, err := container.InitializeFrontRouter(e)
+	_, err := container.InitializeFrontRouter(e, map[string]string{})
 	if err != nil {
 		return nil, err
 	}
