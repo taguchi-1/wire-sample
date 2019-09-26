@@ -33,7 +33,7 @@ ifeq ($(shell command -v mockgen 2> /dev/null),)
 endif
 
 wire:
-	wire infra/container/wire.go infra/container/providers.go
+	wire pkg/infrastructure/container/wire.go pkg/infrastructure/container/providers.go
 
 mock:
 	for path in $$(go list -f {{.Dir}} ./... | grep -v "$(name)$$"); do \

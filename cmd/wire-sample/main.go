@@ -9,7 +9,7 @@ import (
 	"syscall"
 
 	"github.com/labstack/echo"
-	"github.com/taguchi-1/wire-sample/infra/container"
+	"github.com/taguchi-1/wire-sample/pkg/infrastructure/container"
 )
 
 const (
