@@ -3,8 +3,8 @@ package application
 import (
 	"context"
 
-	"github.com/taguchi-1/wire-sample/domain/entity"
-	"github.com/taguchi-1/wire-sample/domain/service"
+	"github.com/taguchi-1/wire-sample/pkg/domain/entity"
+	"github.com/taguchi-1/wire-sample/pkg/domain/service"
 )
 
 // Todo todo application service
@@ -17,8 +17,8 @@ type todoImpl struct {
 }
 
 // NewTodo Constructor
-func NewTodo(todoService service.Todo) Todo {
-	return &todoImpl{todoService}
+func NewTodo(todoService service.Todo) (Todo, error) {
+	return &todoImpl{todoService}, nil
 }
 
 func (app *todoImpl) Get(ctx context.Context, req *entity.TodoGetRequest) (*entity.TodoResponse, error) {

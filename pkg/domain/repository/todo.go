@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 
-	"github.com/taguchi-1/wire-sample/domain/entity"
+	"github.com/taguchi-1/wire-sample/pkg/domain/entity"
 )
 
 // Todo repository interface

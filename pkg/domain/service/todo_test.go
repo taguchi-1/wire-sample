@@ -4,12 +4,13 @@ import (
 	"context"
 	"testing"
 
+	gomock "github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/taguchi-1/wire-sample/domain/entity"
-	"github.com/taguchi-1/wire-sample/infra/persistence"
+	"github.com/taguchi-1/wire-sample/pkg/domain/entity"
+	"github.com/taguchi-1/wire-sample/pkg/domain/repository"
 )
 
-func TestGet(t *testing.T) {
+func TestTodoGet(t *testing.T) {
 	type input struct {
 		id string
 	}
@@ -36,8 +37,15 @@ func TestGet(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
 			ctx := context.Background()
-			todoService := NewTodo(persistence.NewTodo())
+			todoRepo := repository.NewMockTodo(ctrl)
+			todoRepo.EXPECT().Get(ctx, c.input.id).MinTimes(1).Return(
+				c.expect.todo, nil,
+			)
+			todoService := NewTodo(todoRepo)
 			actual, err := todoService.Get(ctx, c.input.id)
 			assert.Nil(t, err)
 			assert.Equal(t, c.expect.todo, actual)

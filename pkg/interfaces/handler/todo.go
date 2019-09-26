@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo"
-	"github.com/taguchi-1/wire-sample/application"
-	"github.com/taguchi-1/wire-sample/domain/entity"
+	"github.com/taguchi-1/wire-sample/pkg/application"
+	"github.com/taguchi-1/wire-sample/pkg/domain/entity"
 )
 
 // Todo handler interface
@@ -22,8 +22,8 @@ const (
 )
 
 //NewTodo  handler constructor
-func NewTodo(todoApp application.Todo) Todo {
-	return &todoImpl{todoApp}
+func NewTodo(todoApp application.Todo) (Todo, error) {
+	return &todoImpl{todoApp}, nil
 }
 
 // Get get handler

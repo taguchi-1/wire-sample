@@ -4,13 +4,13 @@ import (
 	"context"
 	"testing"
 
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
-	"github.com/taguchi-1/wire-sample/domain/entity"
-	"github.com/taguchi-1/wire-sample/domain/service"
-	"github.com/taguchi-1/wire-sample/infra/persistence"
+	"github.com/taguchi-1/wire-sample/pkg/domain/entity"
+	"github.com/taguchi-1/wire-sample/pkg/domain/service"
 )
 
-func TestGet(t *testing.T) {
+func TestTodoGet(t *testing.T) {
 	type input struct {
 		req *entity.TodoGetRequest
 	}
@@ -29,18 +29,23 @@ func TestGet(t *testing.T) {
 			},
 			expect: expect{
 				res: &entity.TodoResponse{
-					Todo: entity.Todo{ID: "1", Title: "タイトル"},
+					Todo: &entity.Todo{ID: "1", Title: "タイトル"},
 				},
 			},
 		},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			ctx := context.Background()
-			todoRepo := persistence.NewTodo()
-			todoService := service.NewTodo(todoRepo)
-			todoApp := NewTodo(todoService)
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
 
+			ctx := context.Background()
+			todoService := service.NewMockTodo(ctrl)
+			todoService.EXPECT().Get(ctx, c.input.req.ID).MinTimes(1).Return(
+				c.expect.res.Todo, nil,
+			)
+
+			todoApp, _ := NewTodo(todoService)
 			actual, err := todoApp.Get(ctx, c.input.req)
 			assert.Nil(t, err)
 			assert.Equal(t, c.expect.res, actual)

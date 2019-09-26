@@ -3,8 +3,8 @@ package service
 import (
 	"context"
 
-	"github.com/taguchi-1/wire-sample/domain/entity"
-	"github.com/taguchi-1/wire-sample/domain/repository"
+	"github.com/taguchi-1/wire-sample/pkg/domain/entity"
+	"github.com/taguchi-1/wire-sample/pkg/domain/repository"
 )
 
 // Todo service interface
